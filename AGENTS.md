@@ -1,6 +1,6 @@
-# AGENTS.md — guidance for coding agents (iOS)
+# AGENTS.md — guidance for coding agents (MmpKit-iOS)
 
-This file is for AI agents working in **MmpKit (iOS branch)**. Prefer it over guessing. Human integration docs: `README.md`.
+This file is for AI agents working in **MmpKit-iOS**. Prefer it over guessing. Human integration docs: `README.md`.
 
 ## What this repo is
 

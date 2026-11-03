@@ -7,10 +7,10 @@ MmpKit provides a unified, cross-platform architecture and Swift facade for Mobi
 such as AppsFlyer and Adjust on iOS. Apps interact only with the unified Mmp facade, switching MMP vendors
 without modifying application business logic.
                        DESC
-  s.homepage         = 'https://github.com/e-hai/MmpKit'
+  s.homepage         = 'https://github.com/e-hai/MmpKit-iOS'
   s.license          = { :type => 'MIT', :file => 'LICENSE' }
   s.author           = { 'e-hai' => 'contact@example.com' }
-  s.source           = { :git => 'https://github.com/e-hai/MmpKit.git', :tag => s.version.to_s }
+  s.source           = { :git => 'https://github.com/e-hai/MmpKit-iOS.git', :tag => s.version.to_s }
   s.ios.deployment_target = '13.0'
   s.swift_version    = '5.9'
 

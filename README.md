@@ -1,4 +1,4 @@
-# MmpKit (iOS)
+# MmpKit-iOS
 
 iOS 归因（MMP）统一封装库。业务只依赖一套 Swift API，通过替换实现模块切换 **AppsFlyer** / **Adjust** 等平台。
 
@@ -24,10 +24,10 @@ iOS 归因（MMP）统一封装库。业务只依赖一套 Swift API，通过替
 在 Xcode 中选择 **File** → **Add Packages...**，输入仓库地址：
 
 ```
-https://github.com/e-hai/MmpKit.git
+https://github.com/e-hai/MmpKit-iOS.git
 ```
 
-并在分支选择器中选择 `ios` 分支（或对应 Release Tag）。按需勾选引入的目标：
+按需勾选引入的目标：
 - `MmpCore`（必选）
 - `MmpAppsFlyer` 或 `MmpAdjust`（二选一）
 
@@ -35,7 +35,7 @@ https://github.com/e-hai/MmpKit.git
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/e-hai/MmpKit.git", branch: "ios")
+    .package(url: "https://github.com/e-hai/MmpKit-iOS.git", from: "1.0.0")
 ],
 targets: [
     .target(
@@ -54,10 +54,10 @@ targets: [
 
 ```ruby
 # 引入核心与 AppsFlyer
-pod 'MmpKit/AppsFlyer', :git => 'https://github.com/e-hai/MmpKit.git', :branch => 'ios'
+pod 'MmpKit/AppsFlyer', :git => 'https://github.com/e-hai/MmpKit-iOS.git'
 
 # 或引入核心与 Adjust
-# pod 'MmpKit/Adjust', :git => 'https://github.com/e-hai/MmpKit.git', :branch => 'ios'
+# pod 'MmpKit/Adjust', :git => 'https://github.com/e-hai/MmpKit-iOS.git'
 ```
 
 ---
