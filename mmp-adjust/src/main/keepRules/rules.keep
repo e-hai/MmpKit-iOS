@@ -1,3 +1,0 @@
-# Adjust keep rules — keep SDK entry points used via reflection.
--keep class com.adjust.sdk.** { *; }
--dontwarn com.adjust.sdk.**
