@@ -176,11 +176,21 @@ let enabled = Mmp.isLogEnabled()
 
 ## 演示 Demo (SwiftUI)
 
-`Sample/SampleApp` 提供了完整的交互式体验工程：
+工程根目录下已内置配置好的 `MmpKitDemo.xcodeproj`：
+
+```bash
+# 进入工程目录并用 Xcode 打开
+cd /Users/a/Develop/project/ios/MmpKit-iOS
+open MmpKitDemo.xcodeproj
+```
+
+在 Xcode 中选择模拟器（如 iPhone 16 / iOS 17+）并点击 **Run (⌘R)** 即可直接运行：
 - 实时展示初始化状态与 MMP 渠道
 - 同步展示 `Mmp.*` 各项缓存属性
 - 支持测试业务事件上报、收入上报、异步拉取归因、切换日志等
 - 滚动展示实时 Activity Logs
+
+> 若后续修改了 `project.yml`，可通过 `xcodegen generate` 重新生成工程。
 
 ## 环境要求
 
