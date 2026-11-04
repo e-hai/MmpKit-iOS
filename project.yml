@@ -1,0 +1,36 @@
+name: MmpKitDemo
+options:
+  bundleIdPrefix: com.kit.mmp
+  deploymentTarget:
+    iOS: "15.0"
+packages:
+  MmpKit:
+    path: .
+targets:
+  MmpKitDemo:
+    type: application
+    platform: iOS
+    deploymentTarget: "15.0"
+    sources:
+      - path: Sample/SampleApp
+    dependencies:
+      - package: MmpKit
+        product: MmpCore
+      - package: MmpKit
+        product: MmpAppsFlyer
+      - package: MmpKit
+        product: MmpAdjust
+    settings:
+      base:
+        INFOPLIST_FILE: Sample/SampleApp/Info.plist
+        PRODUCT_BUNDLE_IDENTIFIER: com.kit.mmp.demo
+        TARGETED_DEVICE_FAMILY: "1,2"
+        ENABLE_PREVIEWS: YES
+        SWIFT_VERSION: "5.0"
+schemes:
+  MmpKitDemo:
+    build:
+      targets:
+        MmpKitDemo: all
+    run:
+      config: Debug
