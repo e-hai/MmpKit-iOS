@@ -21,6 +21,9 @@ public struct ContentView: View {
                     // Action Buttons Card
                     actionsCard
 
+                    // Mock Simulation Card
+                    simulationCard
+
                     // Log Console Card
                     logsCard
                 }
@@ -153,6 +156,54 @@ public struct ContentView: View {
         }
     }
 
+    private var simulationCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text("本地模拟测试 (Mock Simulation)")
+                .font(.headline)
+            Text("无需白名单真机或线上配置，可直接模拟买量与深度链接")
+                .font(.caption)
+                .foregroundColor(.secondary)
+
+            HStack(spacing: 10) {
+                Button(action: simulateNonOrganic) {
+                    Text("模拟买量归因")
+                        .font(.footnote)
+                        .frame(maxWidth: .infinity)
+                        .padding(10)
+                        .background(Color.purple)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+
+                Button(action: simulateOrganic) {
+                    Text("模拟自然量")
+                        .font(.footnote)
+                        .frame(maxWidth: .infinity)
+                        .padding(10)
+                        .background(Color.teal)
+                        .foregroundColor(.white)
+                        .cornerRadius(8)
+                }
+            }
+
+            Button(action: simulateDeepLink) {
+                HStack {
+                    Image(systemName: "link")
+                    Text("模拟深度链接 (myapp://promo/spring_sale)")
+                        .font(.footnote)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(10)
+                .background(Color.indigo.opacity(0.85))
+                .foregroundColor(.white)
+                .cornerRadius(8)
+            }
+        }
+        .padding()
+        .background(Color(.secondarySystemBackground))
+        .cornerRadius(12)
+    }
+
     private var logsCard: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
@@ -218,5 +269,68 @@ public struct ContentView: View {
         Mmp.setLogEnabled(!current)
         store.syncFromMmp()
         store.appendLog("Mmp.setLogEnabled(\(!current))")
+    }
+
+    private func simulateNonOrganic() {
+        if let af = SampleApp.currentClient as? AppsFlyerClient {
+            af.simulateConversionData([
+                "af_status": "Non-organic",
+                "media_source": "googleadwords_int",
+                "campaign": "summer_sale_2026",
+                "af_adset": "group_ios",
+                "af_ad": "banner_300x250",
+            ])
+        } else if let adj = SampleApp.currentClient as? AdjustClient {
+            adj.simulateAttributionData(
+                AttributionData(
+                    network: "googleadwords_int",
+                    campaign: "summer_sale_2026",
+                    adGroup: "group_ios",
+                    creative: "banner_300x250",
+                    clickLabel: nil,
+                    isOrganic: false
+                )
+            )
+        }
+        store.syncFromMmp()
+        store.appendLog("Simulated: Non-organic attribution injected")
+    }
+
+    private func simulateOrganic() {
+        if let af = SampleApp.currentClient as? AppsFlyerClient {
+            af.simulateConversionData([
+                "af_status": "Organic",
+            ])
+        } else if let adj = SampleApp.currentClient as? AdjustClient {
+            adj.simulateAttributionData(
+                AttributionData(
+                    network: "Organic",
+                    campaign: nil,
+                    adGroup: nil,
+                    creative: nil,
+                    clickLabel: nil,
+                    isOrganic: true
+                )
+            )
+        }
+        store.syncFromMmp()
+        store.appendLog("Simulated: Organic attribution injected")
+    }
+
+    private func simulateDeepLink() {
+        if let af = SampleApp.currentClient as? AppsFlyerClient {
+            af.simulateDeepLink(
+                value: "myapp://promo/spring_sale",
+                clickEvent: ["campaign": "spring_sale", "discount": "50%"],
+                isDeferred: true
+            )
+        } else if let adj = SampleApp.currentClient as? AdjustClient {
+            adj.simulateDeepLink(
+                value: "myapp://promo/spring_sale",
+                clickEvent: ["campaign": "spring_sale", "discount": "50%"],
+                isDeferred: true
+            )
+        }
+        store.appendLog("Simulated: DeepLink event injected")
     }
 }

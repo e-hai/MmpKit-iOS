@@ -122,6 +122,16 @@ public final class AppsFlyerClient: NSObject, MmpClient {
         return cachedAttribution
     }
 
+    /// 本地测试 / 模拟方法：手动注入归因数据，无需连接 AppsFlyer 真实后台或白名单真机。
+    public func simulateConversionData(_ data: [String: Any]) {
+        handleConversionData(data)
+    }
+
+    /// 本地测试 / 模拟方法：手动触发深度链接回调。
+    public func simulateDeepLink(value: String?, clickEvent: [String: Any] = [:], isDeferred: Bool = false) {
+        handleDeepLinkResult(value: value, clickEvent: clickEvent, isDeferred: isDeferred)
+    }
+
     /// 辅助方法：处理转化数据转换
     public func handleConversionData(_ data: [String: Any]) {
         let attribution = Self.mapToAttributionData(data)

@@ -5,6 +5,8 @@ import MmpAdjust
 
 @main
 struct SampleApp: App {
+    static var currentClient: MmpClient?
+
     init() {
         setupMmp()
     }
@@ -39,6 +41,7 @@ struct SampleApp: App {
             enableLog: enableLog
         )
 
+        SampleApp.currentClient = client
         Mmp.initialize(config: config, client: client)
         DemoStore.shared.isInitialized = true
         DemoStore.shared.syncFromMmp()

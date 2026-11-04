@@ -135,6 +135,16 @@ public final class AdjustClient: NSObject, MmpClient {
         return cachedAttribution
     }
 
+    /// 本地测试 / 模拟方法：手动注入归因数据，无需连接 Adjust 真实后台。
+    public func simulateAttributionData(_ data: AttributionData) {
+        handleAttributionData(data)
+    }
+
+    /// 本地测试 / 模拟方法：手动触发深度链接回调。
+    public func simulateDeepLink(value: String?, clickEvent: [String: Any] = [:], isDeferred: Bool = false) {
+        handleDeepLinkResult(DeepLinkResult(deepLinkValue: value, clickEvent: clickEvent, isDeferred: isDeferred))
+    }
+
     /// 辅助方法：分发归因数据并更新本地缓存
     public func handleAttributionData(_ attribution: AttributionData) {
         lock.lock()
