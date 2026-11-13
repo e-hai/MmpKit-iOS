@@ -1,6 +1,6 @@
 Pod::Spec.new do |s|
   s.name             = 'MmpKit'
-  s.version          = '1.0.0'
+  s.version          = '1.0.1'
   s.summary          = 'Unified MMP Attribution SDK wrapper for iOS (AppsFlyer, Adjust, etc.)'
   s.description      = <<-DESC
 MmpKit provides a unified, cross-platform architecture and Swift facade for Mobile Measurement Partners (MMP)

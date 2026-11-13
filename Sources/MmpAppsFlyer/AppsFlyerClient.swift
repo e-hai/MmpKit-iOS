@@ -65,6 +65,45 @@ public final class AppsFlyerClient: NSObject, MmpClient {
         deepLinkListener = listener
     }
 
+    public func handleOpenUrl(_ url: URL, options: [AnyHashable: Any] = [:]) {
+        lock.lock()
+        let initialized = isInitialized
+        lock.unlock()
+
+        guard initialized else {
+            MmpLog.w("AppsFlyer handleOpenUrl skipped: not initialized", tag: Self.logTag)
+            return
+        }
+
+        MmpLog.d("AppsFlyer handleOpenUrl url=\(url.absoluteString)", tag: Self.logTag)
+        #if canImport(AppsFlyerLib)
+        AppsFlyerLib.shared().handleOpen(url, options: options)
+        #else
+        MmpLog.d("AppsFlyerLib binary not linked; handleOpenUrl ignored", tag: Self.logTag)
+        #endif
+    }
+
+    public func continueUserActivity(_ userActivity: NSUserActivity) {
+        lock.lock()
+        let initialized = isInitialized
+        lock.unlock()
+
+        guard initialized else {
+            MmpLog.w("AppsFlyer continueUserActivity skipped: not initialized", tag: Self.logTag)
+            return
+        }
+
+        MmpLog.d(
+            "AppsFlyer continueUserActivity url=\(userActivity.webpageURL?.absoluteString ?? "nil")",
+            tag: Self.logTag
+        )
+        #if canImport(AppsFlyerLib)
+        AppsFlyerLib.shared().continue(userActivity, restorationHandler: nil)
+        #else
+        MmpLog.d("AppsFlyerLib binary not linked; continueUserActivity ignored", tag: Self.logTag)
+        #endif
+    }
+
     public func trackEvent(_ event: MmpEvent) {
         lock.lock()
         let initialized = isInitialized

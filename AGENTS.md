@@ -18,7 +18,7 @@ iOS library that wraps MMP attribution SDKs (AppsFlyer, Adjust, …) behind one 
 - Package Managers: Swift Package Manager (`Package.swift`) & CocoaPods (`MmpKit.podspec`)
 - Min deployment target: iOS 13.0, macOS 10.15
 - Swift version: Swift 5.9+ / Swift 6 compatible
-- Coordinates: `https://github.com/e-hai/MmpKit-iOS.git` (tag: `1.0.0`)
+- Coordinates: `https://github.com/e-hai/MmpKit-iOS.git` (tag: `1.0.1`)
 
 ## Package Layout (`Sources/MmpCore`)
 
@@ -55,8 +55,9 @@ Sources/MmpCore/
 | `setAttributionListener` | Forwards after cache update; re-delivers cache immediately if present |
 | `getAttribution { }` | Async; may hit vendor SDK; refreshes cache |
 | `setDeepLinkListener` | Deep link / deferred deep link |
+| `handleOpenUrl(_:options:)` / `continueUserActivity(_:)` | Forwards URI Scheme URL / Universal Link `NSUserActivity` for direct deep link resolution |
 
-`MmpClient` must implement: `initialize`, `setAttributionListener`, `setDeepLinkListener`, `trackEvent`, `trackRevenue`, `getAttribution`, `peekAttribution`.
+`MmpClient` must implement: `initialize`, `setAttributionListener`, `setDeepLinkListener`, `trackEvent`, `trackRevenue`, `getAttribution`, `peekAttribution` (with default no-op implementations for `handleOpenUrl` and `continueUserActivity`).
 
 ## Vendor Quirks (iOS)
 
@@ -65,7 +66,7 @@ Sources/MmpCore/
 - `appId` = Apple App ID (e.g. `123456789`)
 - Event names are readable strings
 - Revenue: `af_revenue` + `af_currency`
-- Deep link: `DeepLinkDelegate` (`didResolveDeepLink`)
+- Deep link: `DeepLinkDelegate` (`didResolveDeepLink`) + `handleOpen(_:options:)` / `continue(_:restorationHandler:)`
 - Has `simulateConversionData` / `simulateDeepLink` for local testing
 
 **Adjust**
@@ -73,6 +74,7 @@ Sources/MmpCore/
 - `MmpEvent.name` / `MmpRevenue.eventName` = **event tokens**
 - `isDebug` → sandbox vs production
 - Deferred deep links: `adjustDeeplinkResponse` delegate
+- Direct deep links: `Adjust.processAndResolveDeeplink(ADJDeeplink(deeplink: url))`
 - Has `simulateAttributionData` / `simulateDeepLink` for local testing
 
 ## Build / Verify

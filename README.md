@@ -2,7 +2,7 @@
 
 [![Platform](https://img.shields.io/badge/Platform-iOS%2013.0%2B%20%7C%20macOS%2010.15%2B-blue.svg)](#环境要求)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B%20%7C%206-orange.svg)](#环境要求)
-[![Release](https://img.shields.io/badge/Release-1.0.0-green.svg)](#快速接入)
+[![Release](https://img.shields.io/badge/Release-1.0.1-green.svg)](#快速接入)
 [![PackageManager](https://img.shields.io/badge/Package-SPM%20%7C%20CocoaPods-red.svg)](#快速接入)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
@@ -113,7 +113,7 @@ sequenceDiagram
 https://github.com/e-hai/MmpKit-iOS.git
 ```
 
-在 Dependency Rule 中选择 **Exact Version** 或 **Up to Next Major Version** 输入 `1.0.0`。按需勾选引入的目标：
+在 Dependency Rule 中选择 **Exact Version** 或 **Up to Next Major Version** 输入 `1.0.1`。按需勾选引入的目标：
 - `MmpCore`（必选）
 - `MmpAppsFlyer` 或 `MmpAdjust`（按业务选型二选一）
 
@@ -122,7 +122,7 @@ https://github.com/e-hai/MmpKit-iOS.git
 ```swift
 // swift-tools-version: 5.9
 dependencies: [
-    .package(url: "https://github.com/e-hai/MmpKit-iOS.git", from: "1.0.0")
+    .package(url: "https://github.com/e-hai/MmpKit-iOS.git", from: "1.0.1")
 ],
 targets: [
     .target(
@@ -143,10 +143,10 @@ targets: [
 
 ```ruby
 # 引入核心库与 AppsFlyer 适配器
-pod 'MmpKit/AppsFlyer', :git => 'https://github.com/e-hai/MmpKit-iOS.git', :tag => '1.0.0'
+pod 'MmpKit/AppsFlyer', :git => 'https://github.com/e-hai/MmpKit-iOS.git', :tag => '1.0.1'
 
 # 或引入核心库与 Adjust 适配器
-# pod 'MmpKit/Adjust', :git => 'https://github.com/e-hai/MmpKit-iOS.git', :tag => '1.0.0'
+# pod 'MmpKit/Adjust', :git => 'https://github.com/e-hai/MmpKit-iOS.git', :tag => '1.0.1'
 ```
 
 ---
@@ -271,17 +271,34 @@ Mmp.getAttribution { data in
 
 ### 4. 深度链接 (Deep Linking)
 
-支持统一标准 Deep Link 与延迟深度链接（Deferred Deep Link）：
+支持统一标准 Direct Deep Link 与延迟深度链接（Deferred Deep Link）：
 
 ```swift
+// 1. 注册统一深度链接监听器
 Mmp.setDeepLinkListener { result in
-    let url = result.deepLinkValue // 链接地址，如 myapp://promo/spring_sale
+    let url = result.deepLinkValue // 链接地址，如 mmpkit://promo/spring_sale
     let params = result.clickEvent  // 携带的点击参数字典
     let isDeferred = result.isDeferred // 是否为安装后延迟启动唤起
     
     // 执行应用内路由跳转
 }
+
+// 2. 在 SwiftUI Scene / AppDelegate 中转发直接唤起事件
+ContentView()
+    .onOpenURL { url in
+        Mmp.handleOpenUrl(url)
+    }
+    .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { userActivity in
+        Mmp.continueUserActivity(userActivity)
+    }
 ```
+
+---
+
+### 全链路协作 SOP（推广 → 运营 → SDK 识别）
+
+关于**市场投放命名规范、OneLink/Tracker 模板、标准化事件字典、Universal Links (AASA) & ATT/SKAN 合规及三阶 QA 验收清单**，请参阅完整全链路指南：
+👉 [docs/MMP_SOP.md](docs/MMP_SOP.md)
 
 ---
 

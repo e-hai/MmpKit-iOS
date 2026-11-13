@@ -69,6 +69,49 @@ public final class AdjustClient: NSObject, MmpClient {
         deepLinkListener = listener
     }
 
+    public func handleOpenUrl(_ url: URL, options: [AnyHashable: Any] = [:]) {
+        processDeeplinkUrl(url)
+    }
+
+    public func continueUserActivity(_ userActivity: NSUserActivity) {
+        guard userActivity.activityType == NSUserActivityTypeBrowsingWeb,
+              let url = userActivity.webpageURL else {
+            MmpLog.d("Adjust continueUserActivity skipped: non-web or nil URL", tag: Self.logTag)
+            return
+        }
+        processDeeplinkUrl(url)
+    }
+
+    private func processDeeplinkUrl(_ url: URL) {
+        lock.lock()
+        let initialized = isInitialized
+        lock.unlock()
+
+        guard initialized else {
+            MmpLog.w("Adjust handleDeepLink skipped: not initialized", tag: Self.logTag)
+            return
+        }
+
+        MmpLog.d("Adjust processDeeplinkUrl url=\(url.absoluteString)", tag: Self.logTag)
+        #if canImport(AdjustSdk) || canImport(Adjust)
+        if let adjDeeplink = ADJDeeplink(deeplink: url) {
+            Adjust.processAndResolveDeeplink(adjDeeplink) { [weak self] resolvedLink in
+                guard let self = self,
+                      let linkString = resolvedLink,
+                      !linkString.isEmpty,
+                      let resolvedUrl = URL(string: linkString) else {
+                    MmpLog.w("Adjust direct deeplink unresolved or empty", tag: Self.logTag)
+                    return
+                }
+                let result = Self.buildDeepLinkResult(url: resolvedUrl, isDeferred: false)
+                self.handleDeepLinkResult(result)
+            }
+        }
+        #else
+        MmpLog.d("Adjust SDK binary not linked; processDeeplinkUrl ignored", tag: Self.logTag)
+        #endif
+    }
+
     public func trackEvent(_ event: MmpEvent) {
         MmpLog.d("Adjust trackEvent token=\(event.name), params=\(event.params)", tag: Self.logTag)
 
@@ -183,6 +226,21 @@ public final class AdjustClient: NSObject, MmpClient {
             raw: dict
         )
     }
+
+    static func buildDeepLinkResult(url: URL, isDeferred: Bool) -> DeepLinkResult {
+        var queryParams: [String: Any] = [:]
+        if let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
+           let queryItems = components.queryItems {
+            for item in queryItems {
+                queryParams[item.name] = item.value ?? ""
+            }
+        }
+        return DeepLinkResult(
+            deepLinkValue: url.absoluteString,
+            clickEvent: queryParams,
+            isDeferred: isDeferred
+        )
+    }
 }
 
 #if canImport(AdjustSdk) || canImport(Adjust)
@@ -199,19 +257,7 @@ extension AdjustClient: AdjustDelegate {
             return false
         }
 
-        var queryParams: [String: Any] = [:]
-        if let components = URLComponents(url: uri, resolvingAgainstBaseURL: false),
-           let queryItems = components.queryItems {
-            for item in queryItems {
-                queryParams[item.name] = item.value ?? ""
-            }
-        }
-
-        let result = DeepLinkResult(
-            deepLinkValue: uri.absoluteString,
-            clickEvent: queryParams,
-            isDeferred: true
-        )
+        let result = Self.buildDeepLinkResult(url: uri, isDeferred: true)
         handleDeepLinkResult(result)
         return false
     }

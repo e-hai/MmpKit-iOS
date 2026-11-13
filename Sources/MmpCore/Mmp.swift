@@ -122,6 +122,22 @@ public final class Mmp {
         setDeepLinkListener(listener)
     }
 
+    /// 转发直接打开应用的深度链接 URL（例如 SwiftUI `onOpenURL` 或 `AppDelegate application(_:open:options:)`）。
+    public static func handleOpenUrl(_ url: URL, options: [AnyHashable: Any] = [:]) {
+        MmpLog.d("handleOpenUrl(\(url.absoluteString))")
+        shared.withClient("handleOpenUrl") { client in
+            client.handleOpenUrl(url, options: options)
+        }
+    }
+
+    /// 转发 Universal Links 唤起的 `NSUserActivity`（例如 SwiftUI `onContinueUserActivity` 或 `SceneDelegate`）。
+    public static func continueUserActivity(_ userActivity: NSUserActivity) {
+        MmpLog.d("continueUserActivity(type=\(userActivity.activityType), url=\(userActivity.webpageURL?.absoluteString ?? "nil"))")
+        shared.withClient("continueUserActivity") { client in
+            client.continueUserActivity(userActivity)
+        }
+    }
+
     /// 上报普通业务事件（快捷方法）。
     public static func trackEvent(_ name: String, params: [String: Any] = [:]) {
         trackEvent(MmpEvent(name: name, params: params))

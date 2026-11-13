@@ -22,4 +22,15 @@ public protocol MmpClient: AnyObject {
 
     /// 立即读取本地缓存的归因数据，若未就绪则返回 nil
     func peekAttribution() -> AttributionData?
+
+    /// 转发通过 URI Scheme / URL 打开应用的直接深度链接
+    func handleOpenUrl(_ url: URL, options: [AnyHashable: Any])
+
+    /// 转发通过 Universal Links (NSUserActivity) 打开应用的直接深度链接
+    func continueUserActivity(_ userActivity: NSUserActivity)
+}
+
+public extension MmpClient {
+    func handleOpenUrl(_ url: URL, options: [AnyHashable: Any]) {}
+    func continueUserActivity(_ userActivity: NSUserActivity) {}
 }

@@ -10,6 +10,8 @@ final class MockClient: MmpClient {
     var trackedEvents: [MmpEvent] = []
     var trackedRevenues: [MmpRevenue] = []
     var mockAttribution: AttributionData?
+    var openedUrls: [URL] = []
+    var continuedActivities: [NSUserActivity] = []
 
     func initialize(config: MmpConfig) {
         self.initializedConfig = config
@@ -37,6 +39,14 @@ final class MockClient: MmpClient {
 
     func peekAttribution() -> AttributionData? {
         return mockAttribution
+    }
+
+    func handleOpenUrl(_ url: URL, options: [AnyHashable: Any]) {
+        openedUrls.append(url)
+    }
+
+    func continueUserActivity(_ userActivity: NSUserActivity) {
+        continuedActivities.append(userActivity)
     }
 }
 
@@ -179,5 +189,26 @@ final class MmpCoreTests: XCTestCase {
         adjClient.handleAttributionData(adjAttr)
         XCTAssertEqual(adjClient.peekAttribution()?.network, "facebook")
         XCTAssertEqual(adjClient.peekAttribution()?.isOrganic, false)
+    }
+
+    func testDirectDeepLinkForwarding() throws {
+        let mock = MockClient()
+        let config = MmpConfig(appToken: "test_token_123456789", isDebug: true)
+        Mmp.initialize(config: config, client: mock)
+
+        let schemeUrl = try XCTUnwrap(URL(string: "mmpkit://promo/spring?coupon=50"))
+        Mmp.handleOpenUrl(schemeUrl)
+        XCTAssertEqual(mock.openedUrls, [schemeUrl])
+
+        let activity = NSUserActivity(activityType: NSUserActivityTypeBrowsingWeb)
+        activity.webpageURL = try XCTUnwrap(URL(string: "https://go.example.com/invite?code=ABC"))
+        Mmp.continueUserActivity(activity)
+        XCTAssertEqual(mock.continuedActivities.count, 1)
+        XCTAssertEqual(mock.continuedActivities.first?.webpageURL, activity.webpageURL)
+
+        let built = AdjustClient.buildDeepLinkResult(url: schemeUrl, isDeferred: false)
+        XCTAssertEqual(built.deepLinkValue, "mmpkit://promo/spring?coupon=50")
+        XCTAssertEqual(built.clickEvent["coupon"] as? String, "50")
+        XCTAssertFalse(built.isDeferred)
     }
 }

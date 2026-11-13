@@ -14,6 +14,14 @@ struct SampleApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .onOpenURL { url in
+                    DemoStore.shared.appendLog("onOpenURL: \(url.absoluteString)")
+                    Mmp.handleOpenUrl(url)
+                }
+                .onContinueUserActivity(NSUserActivityTypeBrowsingWeb) { userActivity in
+                    DemoStore.shared.appendLog("onContinueUserActivity: \(userActivity.webpageURL?.absoluteString ?? "nil")")
+                    Mmp.continueUserActivity(userActivity)
+                }
         }
     }
 
